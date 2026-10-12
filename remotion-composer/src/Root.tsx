@@ -16,6 +16,8 @@ import { ProductReveal, ProductRevealProps } from "./components/ProductReveal";
 import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
 import { CollageBurst, CollageBurstProps } from "./CollageBurst";
 import { LyricOverlay, LyricOverlayProps } from "./LyricOverlay";
+import { DataMotionShowcase } from "./DataMotionShowcase";
+
 
 // ---------------------------------------------------------------------------
 // Theme System — prevents every video from looking like dark fintech
@@ -103,7 +105,56 @@ export const THEMES: Record<string, ThemeConfig> = {
     captionHighlightColor: "#FFB347",
     captionBackgroundColor: "rgba(10, 10, 26, 0.8)",
   },
+  "institutional-underwriting": {
+    primaryColor: "#0E382B",
+    accentColor: "#C59B27",
+    backgroundColor: "#F4F1EA",
+    surfaceColor: "#FFFFFF",
+    textColor: "#1B1B1B",
+    mutedTextColor: "rgba(27, 27, 27, 0.65)",
+    headingFont: "Cinzel, Playfair Display, Georgia, serif",
+    bodyFont: "Inter, Georgia, serif",
+    monoFont: "Courier Prime, monospace",
+    chartColors: ["#0E382B", "#C59B27", "#1B1B1B", "#8C7B5D", "#4A6B5D"],
+    springConfig: { damping: 18, stiffness: 100, mass: 1 },
+    transitionDuration: 0.5,
+    captionHighlightColor: "#C59B27",
+    captionBackgroundColor: "rgba(244, 241, 234, 0.95)",
+  },
+  "tactile-journalism": {
+    primaryColor: "#1A7A4C",
+    accentColor: "#C62828",
+    backgroundColor: "#EFECE6",
+    surfaceColor: "#F7F5F0",
+    textColor: "#222222",
+    mutedTextColor: "#5A5A58",
+    headingFont: "Inter, sans-serif",
+    bodyFont: "Inter, sans-serif",
+    monoFont: "Courier Prime, JetBrains Mono, monospace",
+    chartColors: ["#1A7A4C", "#C62828", "#0288D1", "#FFE600", "#5A5A58"],
+    springConfig: { damping: 16, stiffness: 120, mass: 0.9 },
+    transitionDuration: 0.4,
+    captionHighlightColor: "#FFE600",
+    captionBackgroundColor: "rgba(239, 236, 230, 0.92)",
+  },
+  "swiss-vector": {
+    primaryColor: "#3B82F6",
+    accentColor: "#F59E0B",
+    backgroundColor: "#131B2A",
+    surfaceColor: "#1E293B",
+    textColor: "#F8FAFC",
+    mutedTextColor: "#94A3B8",
+    headingFont: "Inter, sans-serif",
+    bodyFont: "Inter, sans-serif",
+    monoFont: "Fira Code, monospace",
+    chartColors: ["#3B82F6", "#F59E0B", "#EF4444", "#10B981", "#64748B"],
+    springConfig: { damping: 22, stiffness: 140, mass: 0.9 },
+    transitionDuration: 0.4,
+    captionHighlightColor: "#F59E0B",
+    captionBackgroundColor: "rgba(19, 27, 42, 0.9)",
+  },
 };
+
 
 // Default theme when none is specified — uses the existing dark style for backwards compatibility
 export const DEFAULT_THEME = THEMES["flat-motion-graphics"];
@@ -330,6 +381,15 @@ export const Root: React.FC = () => {
           overlay: true,
         } as EndTagProps}
       />
+      <Composition
+        id="DataMotionShowcase"
+        component={DataMotionShowcase}
+        durationInFrames={390}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
     </>
   );
 };
+

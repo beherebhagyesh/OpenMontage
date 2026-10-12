@@ -1,0 +1,105 @@
+identity:
+  name: "Tactile Journalism"
+  category: retro
+  mood: investigative, conversational, tactile, energetic
+
+  pace: moderate
+  best_for: "Economic historical comparisons, policy deep-dives, visual journalism, investigative data essays"
+
+
+visual_language:
+  color_palette:
+    primary: ["#1A7A4C", "#0D5331"]
+    accent: ["#C62828", "#FFE600"]
+    background: "#EFECE6"
+    text: "#222222"
+    muted: "#5A5A58"
+  composition: top-down workbench, split-screen decade portals, hand-held camera drift
+  texture: aged watercolor paper grain, torn fibrous deckle edges, scanned archival print halftone
+
+typography:
+  headings:
+    font: "Inter"
+    weight: 800
+    tracking: "-0.03em"
+  body:
+    font: "Inter"
+    weight: 400
+    line_height: 1.55
+  code:
+    font: "Courier Prime"
+    weight: 700
+  stat_card:
+    font: "Inter"
+    weight: 900
+    size_multiplier: 3.4
+  scale_system: "major_third"
+  weight_matrix:
+    title: 900
+    heading: 800
+    body: 400
+    caption: 500
+
+motion:
+  transitions: [deckle-edge-tear, decade-split-wipe, table-slide, macro-focus-pull]
+  animation_style: "mixed frame rates: 12 fps stop-motion posterized paper, smooth 24 fps camera drifts"
+  pacing_rules:
+    min_scene_hold_seconds: 2.0
+    max_scene_hold_seconds: 14
+    text_card_hold_seconds: 3.0
+    stat_card_hold_seconds: 2.8
+    transition_duration_seconds: 0.4
+  entrance: "card drop with elastic overshoot cubic-bezier(0.22, 1.25, 0.36, 1.0)"
+  exit: "cardstock wipe across table"
+
+audio:
+  voice_style: "conversational, urgent, intimate 152 WPM cadence with 400ms pre-number pauses"
+  music_mood: "dynamic multi-movement: vintage vinyl crackle, acoustic double bass, neo-classical marimba"
+  music_volume: 0.08
+  sfx_style: "real paper tearing, felt marker squeaks, typewriter carriage return bells, 50 Hz sub-drops"
+  ducking_threshold_db: -18
+
+asset_generation:
+  image_prompt_prefix: "tactile visual journalism archival collage, scanned vintage document, historical photo cutout, "
+  image_negative_prompt: "clean 3d render, plastic textures, corporate generic stock, neon glow"
+  diagram_style: "divergence calipers, scissor wedges, blueprint house comparisons, scorecard grids"
+  consistency_anchors:
+    - "Aged cream paper (#EFECE6) as continuous desk backdrop"
+    - "Fluorescent yellow (#FFE600) multiply-blended highlighter strokes"
+    - "Warning crimson (#C62828) for housing multiple and inflation divergence"
+    - "Mixed 12 fps stop-motion cadence on document cutouts"
+
+overlays:
+  stat_card:
+    bg: "#F7F5F0"
+    border: "#222222"
+    radius: 6
+    shadow: "0 8px 24px rgba(0, 0, 0, 0.08)"
+  key_term:
+    bg: "#FFE600"
+    text: "#222222"
+    radius: 2
+  code_block:
+    bg: "#222222"
+    text: "#EFECE6"
+    highlight: "#FFE600"
+
+quality_rules:
+  - "Minimum contrast ratio 4.5:1 for all text against cream paper"
+  - "Posterize time to 12 fps for all paper and cutout graphic layers"
+  - "Fluorescent yellow highlighter must use Multiply blend mode"
+  - "Every number count-up must bind to typewriter or ratchet Foley"
+  - "Maintain conversational pacing between 148 and 156 words per minute"
+
+chart_palette:
+  - "#1A7A4C"
+  - "#C62828"
+  - "#0288D1"
+  - "#FFE600"
+  - "#5A5A58"
+  - "#222222"
+
+color_rules:
+  harmony_type: "analogous"
+  contrast_validation: true
+  colorblind_safe: true

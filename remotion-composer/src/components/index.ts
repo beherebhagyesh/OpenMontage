@@ -17,3 +17,13 @@ export type { ParticleType } from "./ParticleOverlay";
 export type { CameraMotion, AnimeSceneProps } from "./AnimeScene";
 export type { TerminalStep } from "./TerminalScene";
 export type { ScreenshotStep, Region, Point } from "./ScreenshotScene";
+export { KineticCounter } from "./KineticCounter";
+export type { KineticCounterProps } from "./KineticCounter";
+export { WaffleMatrix } from "./WaffleMatrix";
+export type { WaffleMatrixProps } from "./WaffleMatrix";
+export { DivergenceRatio } from "./DivergenceRatio";
+export type { DivergenceRatioProps } from "./DivergenceRatio";
+export { ProportionGauge } from "./ProportionGauge";
+export type { ProportionGaugeProps } from "./ProportionGauge";
+
+

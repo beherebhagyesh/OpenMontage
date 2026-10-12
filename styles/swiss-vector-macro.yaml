@@ -1,0 +1,104 @@
+identity:
+  name: "Swiss Vector Macro"
+  category: motion-graphics
+  mood: intellectual, clinical, structured, minimalist
+  pace: deliberate
+  best_for: "Geopolitical analysis, demographic modeling, macroeconomic structural problems, industrial deep dives"
+
+
+visual_language:
+  color_palette:
+    primary: ["#3B82F6", "#1D4ED8"]
+    accent: ["#F59E0B", "#EF4444"]
+    background: "#131B2A"
+    text: "#F8FAFC"
+    muted: "#94A3B8"
+  composition: strict 12-column Cartesian grid, infinite canvas camera pans, 30-degree isometric projections
+  texture: flat vector, zero skeuomorphism, zero grain
+
+typography:
+  headings:
+    font: "Inter"
+    weight: 800
+    tracking: "-0.025em"
+  body:
+    font: "Inter"
+    weight: 400
+    line_height: 1.6
+  code:
+    font: "Fira Code"
+    weight: 400
+  stat_card:
+    font: "Inter"
+    weight: 800
+    size_multiplier: 3.0
+  scale_system: "major_third"
+  weight_matrix:
+    title: 800
+    heading: 700
+    body: 400
+    caption: 400
+
+motion:
+  transitions: [infinite-canvas-pan, card-push, shape-morph]
+  animation_style: "exponential deceleration cubic-bezier(0.16, 1.0, 0.3, 1.0), 40ms staggered cascades, zero bounce"
+  pacing_rules:
+    min_scene_hold_seconds: 2.5
+    max_scene_hold_seconds: 12
+    text_card_hold_seconds: 3.5
+    stat_card_hold_seconds: 3.0
+    transition_duration_seconds: 0.4
+  entrance: "vector slide with OutExpo settle"
+  exit: "smooth linear fade to background slate"
+
+audio:
+  voice_style: "clinical, hypnotic, measured 141 WPM cadence with clean analytical pauses"
+  music_mood: "ambient analog synth pads, polyrhythmic marimba plucks, clockwork rhythmic arpeggios"
+  music_volume: 0.06
+  sfx_style: "high-passed wooden block clicks, dry UI tick Foley, low-frequency node drops"
+  ducking_threshold_db: -22
+
+asset_generation:
+  image_prompt_prefix: "swiss graphic design flat vector icon, clean geometric lines, dark blue slate background, "
+  image_negative_prompt: "photorealistic, 3d render, skeuomorphic, textures, gradients, hand-drawn"
+  diagram_style: "stacked debt bars, demographic pyramid morphs, cyclical capital flowcharts"
+  consistency_anchors:
+    - "Midnight slate (#131B2A) as universal backdrop"
+    - "Strict 40ms stagger delays between list items"
+    - "Amber (#F59E0B) for real estate and debt warnings"
+    - "Dry UI click sound binding to card reveals"
+
+overlays:
+  stat_card:
+    bg: "#1E293B"
+    border: "#334155"
+    radius: 12
+    shadow: "0 16px 32px rgba(0, 0, 0, 0.3)"
+  key_term:
+    bg: "rgba(59, 130, 246, 0.15)"
+    text: "#3B82F6"
+    radius: 4
+  code_block:
+    bg: "#0F172A"
+    text: "#F8FAFC"
+    highlight: "#F59E0B"
+
+quality_rules:
+  - "Minimum contrast ratio 4.5:1 for all text against midnight slate"
+  - "All animations must use exponential deceleration without bounce"
+  - "Maintain strict 40ms stagger delay between cascading nodes"
+  - "Bind card appearances to high-passed wooden block UI clicks"
+  - "Maintain analytical speaking cadence between 138 and 144 words per minute"
+
+chart_palette:
+  - "#3B82F6"
+  - "#F59E0B"
+  - "#EF4444"
+  - "#10B981"
+  - "#64748B"
+  - "#8B5CF6"
+
+color_rules:
+  harmony_type: "analogous"
+  contrast_validation: true
+  colorblind_safe: true

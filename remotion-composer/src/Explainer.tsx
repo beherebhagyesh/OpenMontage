@@ -243,6 +243,8 @@ interface Cut {
   transition_in?: string;
   transition_out?: string;
   transition_duration?: number;
+  /** Entrance over the previous scene (the previous scene is held under it): fade | slide-left | push-up | blur-dissolve | drift-in | zoom | cut */
+  enter?: { k: string; d: number };
   transform?: {
     animation?: string;
     scale?: number;
@@ -827,6 +829,23 @@ const OverlayRenderer: React.FC<{ overlay: Overlay; theme: ThemeConfig }> = ({
   return null;
 };
 
+const EnterWrap: React.FC<{ enter?: { k: string; d: number }; children: React.ReactNode }> = ({ enter, children }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  if (!enter || enter.k === "cut" || enter.d <= 0) return <>{children}</>;
+  const n = Math.max(1, Math.round(enter.d * fps));
+  const raw = Math.min(1, Math.max(0, frame / n));
+  const p = 1 - Math.pow(1 - raw, 4);
+  let style: React.CSSProperties = {};
+  if (enter.k === "fade") style = { opacity: p };
+  else if (enter.k === "slide-left" || enter.k === "whip-left") style = { transform: `translateX(${(1 - p) * 100}%)` };
+  else if (enter.k === "push-up") style = { transform: `translateY(${(1 - p) * 100}%)` };
+  else if (enter.k === "blur-dissolve") style = { opacity: p, filter: `blur(${(1 - p) * 14}px)` };
+  else if (enter.k === "drift-in") style = { opacity: p, transform: `translateY(${(1 - p) * 3}%) scale(${1.04 - 0.04 * p})` };
+  else if (enter.k === "zoom") style = { opacity: p, transform: `scale(${1.5 - 0.5 * p})`, filter: `blur(${(1 - p) * 10}px)` };
+  return <AbsoluteFill style={style}>{children}</AbsoluteFill>;
+};
+
 // ---------------------------------------------------------------------------
 // Main composition
 // ---------------------------------------------------------------------------
@@ -844,13 +863,17 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
       <AnimatedBackground theme={theme} />
 
       {/* Layer 1: Visual scenes */}
-      {cuts.map((cut) => {
+      {cuts.map((cut, idx) => {
         const from = Math.round(cut.in_seconds * fps);
-        const duration = Math.round((cut.out_seconds - cut.in_seconds) * fps);
+        const nextEnter = cuts[idx + 1]?.enter;
+        const hold = nextEnter && nextEnter.k !== "cut" ? Math.round(nextEnter.d * fps) : 0;
+        const duration = Math.round((cut.out_seconds - cut.in_seconds) * fps) + hold;
 
         return (
           <Sequence key={cut.id} from={from} durationInFrames={duration}>
-            <SceneRenderer cut={cut} theme={theme} />
+            <EnterWrap enter={cut.enter}>
+              <SceneRenderer cut={cut} theme={theme} />
+            </EnterWrap>
           </Sequence>
         );
       })}

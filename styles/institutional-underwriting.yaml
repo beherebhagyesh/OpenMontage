@@ -1,0 +1,105 @@
+identity:
+  name: "Institutional Underwriting"
+  category: cinematic
+  mood: authoritative, deliberate, prestigious, forensic
+
+  pace: deliberate
+  best_for: "Macroeconomic documentaries, private equity theses, infrastructure investigations, real estate underwriting"
+
+
+visual_language:
+  color_palette:
+    primary: ["#0E382B", "#164E3D"]
+    accent: ["#C59B27", "#D4AF37"]
+    background: "#F4F1EA"
+    text: "#1B1B1B"
+    muted: "rgba(27, 27, 27, 0.65)"
+  composition: 2.5D multi-plane desk perspective, archival paper layering, rule-of-thirds punch-ins
+  texture: subtle eggshell parchment grain, archival paper fiber, vintage deckle edges
+
+typography:
+  headings:
+    font: "Cinzel"
+    weight: 700
+    tracking: "-0.01em"
+  body:
+    font: "Playfair Display"
+    weight: 400
+    line_height: 1.5
+  code:
+    font: "Courier Prime"
+    weight: 400
+  stat_card:
+    font: "Inter"
+    weight: 800
+    size_multiplier: 3.2
+  scale_system: "major_third"
+  weight_matrix:
+    title: 800
+    heading: 700
+    body: 400
+    caption: 400
+
+motion:
+  transitions: [paper-tear, desk-pan, planar-tilt, presenter-punch-in]
+  animation_style: "heavy deceleration cubic-bezier(0.12, 0.82, 0.18, 1.0), mechanical lock, no bounce"
+  pacing_rules:
+    min_scene_hold_seconds: 3.5
+    max_scene_hold_seconds: 18
+    text_card_hold_seconds: 4.0
+    stat_card_hold_seconds: 3.5
+    transition_duration_seconds: 0.5
+  entrance: "2.5D planar descent with deceleration settle"
+  exit: "subtle camera push past focus plane"
+
+audio:
+  voice_style: "authoritative, serious, measured 141 WPM cadence with 400ms pre-number micro-pauses"
+  music_mood: "analog downtempo synth, low 808 kick, trip-hop percussion, atmospheric cello"
+  music_volume: 0.07
+  sfx_style: "tactile typewriter ratchet clicks, cardstock friction slides, 55 Hz sub-bass drops on billions"
+  ducking_threshold_db: -20
+
+asset_generation:
+  image_prompt_prefix: "archival documentary photo cutout, textured paper collage, institutional private equity aesthetic, "
+  image_negative_prompt: "cartoon, 3d render, glossy, neon, cheap stock footage, oversaturated"
+  diagram_style: "2.5D tilted bounding boxes, 314-dot waffle matrices, illuminated node maps"
+  consistency_anchors:
+    - "Eggshell parchment (#F4F1EA) as base canvas substrate"
+    - "Hunter green (#0E382B) as primary corporate tone"
+    - "Textured gold (#C59B27) for high-value metrics"
+    - "Tactile typewriter SFX bound to number ticker increments"
+
+overlays:
+  stat_card:
+    bg: "#FFFFFF"
+    border: "#0E382B"
+    radius: 8
+    shadow: "0 12px 32px rgba(14, 56, 43, 0.12)"
+  key_term:
+    bg: "rgba(197, 155, 39, 0.15)"
+    text: "#0E382B"
+    radius: 4
+  code_block:
+    bg: "#1B1B1B"
+    text: "#F4F1EA"
+    highlight: "#C59B27"
+
+quality_rules:
+  - "Minimum contrast ratio 4.5:1 for all text against eggshell parchment"
+  - "Every number must decelerate with cubic-bezier(0.12, 0.82, 0.18, 1.0)"
+  - "Music must cut to silence 800ms before major question pivots"
+  - "All archival cutouts must feature hunter-green or gold colorized accents"
+  - "Maintain a measured speaking cadence between 138 and 144 words per minute"
+
+chart_palette:
+  - "#0E382B"
+  - "#C59B27"
+  - "#1B1B1B"
+  - "#8C7B5D"
+  - "#4A6B5D"
+  - "#D4AF37"
+
+color_rules:
+  harmony_type: "analogous"
+  contrast_validation: true
+  colorblind_safe: true
