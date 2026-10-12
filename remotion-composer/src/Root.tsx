@@ -17,6 +17,7 @@ import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
 import { CollageBurst, CollageBurstProps } from "./CollageBurst";
 import { LyricOverlay, LyricOverlayProps } from "./LyricOverlay";
 import { DataMotionShowcase } from "./DataMotionShowcase";
+import { SynthesizedMacroDoc } from "./SynthesizedMacroDoc";
 
 
 // ---------------------------------------------------------------------------
@@ -385,6 +386,14 @@ export const Root: React.FC = () => {
         id="DataMotionShowcase"
         component={DataMotionShowcase}
         durationInFrames={390}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="SynthesizedMacroDoc"
+        component={SynthesizedMacroDoc}
+        durationInFrames={1500}
         fps={30}
         width={1920}
         height={1080}
