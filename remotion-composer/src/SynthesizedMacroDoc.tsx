@@ -566,6 +566,8 @@ export interface SynthesizedMacroDocProps {
   tasteProfile?: Record<string, any>;
   title?: string;
   reportCode?: string;
+  // [left, top, right, bottom] px kept clear of platform UI (e.g. 9:16 Shorts: 48, 288, 192, 672)
+  safeArea?: number[];
 }
 
 // ---------------------------------------------------------------------------
@@ -1307,9 +1309,9 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
                 <div
                   style={{
                     position: "absolute",
-                    left: 0,
-                    right: 0,
-                    bottom: isVertical ? 96 : 48,
+                    left: props.safeArea ? props.safeArea[0] : 0,
+                    right: props.safeArea ? props.safeArea[2] : 0,
+                    bottom: props.safeArea ? props.safeArea[3] + 24 : isVertical ? 96 : 48,
                     zIndex: 90,
                     display: "flex",
                     justifyContent: "center",
