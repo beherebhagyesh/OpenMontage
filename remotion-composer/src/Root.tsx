@@ -397,6 +397,18 @@ export const Root: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
+        calculateMetadata={({ props }: { props: any }) => {
+          if (props?.durationInFrames) {
+            return { durationInFrames: Math.max(30, props.durationInFrames) };
+          }
+          if (props?.beats && Array.isArray(props.beats) && props.beats.length > 0) {
+            const maxEndSec = props.beats.reduce((acc: number, b: any) => Math.max(acc, b.end_sec || 0), 0);
+            if (maxEndSec > 0) {
+              return { durationInFrames: Math.max(30, Math.ceil(maxEndSec * 30)) };
+            }
+          }
+          return { durationInFrames: 1500 };
+        }}
       />
     </>
   );

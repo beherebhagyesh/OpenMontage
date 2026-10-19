@@ -14,6 +14,9 @@ import {
   WaffleMatrix,
   DivergenceRatio,
   ProportionGauge,
+  CalloutBox,
+  StatCard,
+  HeroTitle,
 } from "./components";
 
 // Subtitle sentences from narration.vtt
@@ -536,8 +539,210 @@ const StudioThesisLock: React.FC = () => {
   );
 };
 
+export interface DynamicBeat {
+  beat_id: string;
+  start_sec: number;
+  end_sec: number;
+  duration_sec: number;
+  visual_type: string;
+  camera_directive?: string;
+  component_name?: string;
+  props?: Record<string, any>;
+  spoken_dialogue?: string;
+  sfx_type?: string;
+}
+
+export interface SynthesizedMacroDocProps {
+  beats?: DynamicBeat[];
+  tasteProfile?: Record<string, any>;
+  title?: string;
+  reportCode?: string;
+}
+
 // MASTER COMPOSITION: SynthesizedMacroDoc
-export const SynthesizedMacroDoc: React.FC = () => {
+export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) => {
+  // If dynamic beats are passed via --props, render them dynamically
+  if (props.beats && props.beats.length > 0) {
+    const paperColor = props.tasteProfile?.visual_grammar?.paper_color || "#F4F1EA";
+    const primaryColor = props.tasteProfile?.visual_grammar?.primary_color || "#131B2A";
+    const accentColor = props.tasteProfile?.visual_grammar?.accent_color || "#C59B27";
+    const inkColor = props.tasteProfile?.visual_grammar?.ink_color || "#1D1B16";
+
+    return (
+      <AbsoluteFill style={{ backgroundColor: paperColor }}>
+        {props.beats.map((beat, idx) => {
+          const fromFrame = Math.round(beat.start_sec * 30);
+          const durFrames = Math.max(1, Math.round(beat.duration_sec * 30));
+          const triggerFrame = beat.props?.trigger_frames?.primary_metric || 10;
+          const isDark = beat.visual_type === "proportion_gauge" || primaryColor === "#0A0A0A";
+
+          return (
+            <Sequence key={beat.beat_id || idx} from={fromFrame} durationInFrames={durFrames}>
+              <DossierOverlay
+                title={props.title || "Macro Intelligence Analysis"}
+                reportCode={`BEAT-${String(idx + 1).padStart(2, "0")}`}
+                theme={isDark ? "dark" : "light"}
+              />
+
+              {/* 1. Kinetic Typography & Kinetic Counter */}
+              {(beat.visual_type === "kinetic_counter" || beat.visual_type === "kinetic_typography") && (
+                <KineticCounter
+                  value={beat.props?.to || 4.2}
+                  startValue={beat.props?.from || 0.0}
+                  prefix={beat.props?.prefix || "$"}
+                  suffix={beat.props?.suffix || " Trillion"}
+                  decimals={beat.props?.decimals ?? 1}
+                  durationInFrames={Math.min(durFrames - 10, 54)}
+                  startFrame={triggerFrame}
+                  fontSize={120}
+                  color={beat.props?.inkColor || inkColor}
+                  accentColor={beat.props?.accentColor || accentColor}
+                  badge={beat.props?.label || "VERIFIED FORENSIC DATA"}
+                  subtitle={beat.spoken_dialogue}
+                  backgroundColor={beat.props?.paperColor || paperColor}
+                />
+              )}
+
+              {/* 2. Enterprise Adoption Waffle Matrix */}
+              {beat.visual_type === "waffle_matrix" && (
+                <div style={{ transform: "translateY(-28px)" }}>
+                  <WaffleMatrix
+                    totalDots={beat.props?.totalDots || 500}
+                    columns={25}
+                    activeCount={beat.props?.highlightedDots || 420}
+                    dotSize={15}
+                    gap={7}
+                    title={beat.props?.label || "Enterprise Adoption Distribution"}
+                    subtitle={beat.spoken_dialogue || "Empirical Corporate Modernization Saturation"}
+                    badge="SYSTEMIC MIGRATION CENSUS"
+                    activeColor={beat.props?.inkColor || inkColor}
+                    accentColor={beat.props?.accentColor || accentColor}
+                    backgroundColor={beat.props?.paperColor || paperColor}
+                    durationInFrames={Math.min(durFrames - 10, 65)}
+                    startFrame={triggerFrame}
+                  />
+                </div>
+              )}
+
+              {/* 3. Divergence Ratio & Chart Animation */}
+              {(beat.visual_type === "divergence_ratio" || beat.visual_type === "chart_animation") && (
+                <div style={{ transform: "translateY(-28px)" }}>
+                  <DivergenceRatio
+                    title="The Operational Scissor Divergence"
+                    subtitle={beat.spoken_dialogue || "Legacy Headcount Multiple vs Autonomous Software Leverage"}
+                    baselineYear={beat.props?.lowerLabel || "LEGACY AGENCY"}
+                    baselineMultiplier={beat.props?.lowerValue || 1.3}
+                    currentYear={beat.props?.upperLabel || "EXECUTION ENGINE"}
+                    currentMultiplier={beat.props?.upperValue || 5.8}
+                    highlighterNotice="4.5X OPERATIONAL SCISSOR GAP"
+                    backgroundColor={beat.props?.paperColor || "#EFECE6"}
+                    durationInFrames={Math.min(durFrames - 10, 55)}
+                    startFrame={triggerFrame}
+                  />
+                </div>
+              )}
+
+              {/* 4. Proportion Gauge */}
+              {beat.visual_type === "proportion_gauge" && (
+                <AbsoluteFill style={{ backgroundColor: "#131B2A", justifyContent: "center", alignItems: "center" }}>
+                  <div style={{ width: 880, height: 560 }}>
+                    <ProportionGauge
+                      percentage={beat.props?.percentage || 78}
+                      label={beat.props?.label || "Operating Margin Advantage"}
+                      baselineLabel="Legacy Baseline: 22%"
+                      title="Autonomous Leverage Model"
+                      subtitle={beat.spoken_dialogue || "Gross margin surplus unlocked through autonomous software"}
+                      accentColor={beat.props?.accentColor || "#F59E0B"}
+                      secondaryColor="#334155"
+                      backgroundColor="rgba(30, 41, 59, 0.7)"
+                      cardColor="#1E293B"
+                      durationInFrames={Math.min(durFrames - 10, 60)}
+                      startFrame={triggerFrame}
+                    />
+                  </div>
+                </AbsoluteFill>
+              )}
+
+              {/* 5. Bento Stat Grid */}
+              {beat.visual_type === "bento_stat_grid" && (
+                <StatCard
+                  stat={beat.props?.stat || "$4.2T"}
+                  subtitle={beat.spoken_dialogue || beat.props?.label || "Institutional Capital Reallocation"}
+                  color={beat.props?.inkColor || inkColor}
+                  accentColor={beat.props?.accentColor || accentColor}
+                  backgroundColor={beat.props?.paperColor || paperColor}
+                />
+              )}
+
+              {/* 6. Evidence Callout */}
+              {beat.visual_type === "evidence_callout" && (
+                <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: 80 }}>
+                  <CalloutBox
+                    type="quote"
+                    title={beat.props?.citation_title || "Verified Claim"}
+                    text={beat.spoken_dialogue || beat.props?.mandate || ""}
+                    borderColor={beat.props?.accentColor || accentColor}
+                    backgroundColor={beat.props?.paperColor || "#F9FAFB"}
+                    textColor={beat.props?.inkColor || inkColor}
+                  />
+                </AbsoluteFill>
+              )}
+
+              {/* 7. Fallback / Closing Slate */}
+              {(beat.visual_type === "broll_slate" || (!["kinetic_counter", "kinetic_typography", "waffle_matrix", "divergence_ratio", "chart_animation", "proportion_gauge", "bento_stat_grid", "evidence_callout"].includes(beat.visual_type))) && (
+                <StudioThesisLock />
+              )}
+
+              {/* Dynamic Spoken Dialogue Captions */}
+              {beat.spoken_dialogue && (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: 48,
+                    zIndex: 90,
+                    display: "flex",
+                    justifyContent: "center",
+                    pointerEvents: "none",
+                    padding: "0 80px",
+                  }}
+                >
+                  <div
+                    style={{
+                      backgroundColor: "rgba(18, 16, 14, 0.88)",
+                      backdropFilter: "blur(12px)",
+                      padding: "12px 28px",
+                      borderRadius: 8,
+                      border: "1px solid rgba(197, 155, 39, 0.35)",
+                      boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                      maxWidth: 1300,
+                      textAlign: "center",
+                    }}
+                  >
+                    <p
+                      style={{
+                        margin: 0,
+                        fontFamily: "Space Grotesk, Inter, sans-serif",
+                        fontSize: 26,
+                        fontWeight: 700,
+                        color: "#F4F1EA",
+                        letterSpacing: "-0.01em",
+                      }}
+                    >
+                      {beat.spoken_dialogue}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </Sequence>
+          );
+        })}
+      </AbsoluteFill>
+    );
+  }
+
+  // Fallback to default canonical showcase if no custom beats provided
   return (
     <AbsoluteFill style={{ backgroundColor: "#000000" }}>
       {/* Master Mixed Soundtrack (Voice + Ducked Music) */}
