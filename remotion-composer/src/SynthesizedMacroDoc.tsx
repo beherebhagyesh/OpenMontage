@@ -8,6 +8,7 @@ import {
   useVideoConfig,
   Audio,
   staticFile,
+  OffthreadVideo,
 } from "remotion";
 import {
   KineticCounter,
@@ -550,6 +551,12 @@ export interface DynamicBeat {
   props?: Record<string, any>;
   spoken_dialogue?: string;
   sfx_type?: string;
+  flux_prompt?: string;
+  motion_prompt?: string;
+  motion_engine?: string;
+  backdrop_mode?: string;
+  broll_video_path?: string;
+  keyframe_path?: string;
 }
 
 export interface SynthesizedMacroDocProps {
@@ -576,16 +583,114 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
           const triggerFrame = beat.props?.trigger_frames?.primary_metric || 10;
           const isDark = beat.visual_type === "proportion_gauge" || primaryColor === "#0A0A0A";
 
+          const brollRelative = beat.props?.broll_relative;
+          const brollPath = brollRelative ? staticFile(brollRelative) : (beat.props?.broll_video_path || beat.broll_video_path || null);
+          const backdropMode = beat.props?.backdrop_mode || beat.backdrop_mode || "hud_over_broll";
+          const hasBroll = Boolean(brollPath);
+
           return (
             <Sequence key={beat.beat_id || idx} from={fromFrame} durationInFrames={durFrames}>
+              {/* 0. Generative B-Roll Video Backdrop (Flux/Wan/MiniMax/FFmpeg) */}
+              {hasBroll && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    overflow: "hidden",
+                    zIndex: 0,
+                  }}
+                >
+                  <OffthreadVideo
+                    src={brollPath as string}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      filter: backdropMode === "hud_over_broll" ? "brightness(0.38) blur(1px)" : "none",
+                    }}
+                  />
+                  {backdropMode === "hud_over_broll" ? (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: "radial-gradient(circle at center, rgba(19, 27, 42, 0.45) 0%, rgba(19, 27, 42, 0.88) 100%)",
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: "linear-gradient(to top, rgba(10, 10, 10, 0.90) 0%, rgba(10, 10, 10, 0.15) 50%, rgba(10, 10, 10, 0.6) 100%)",
+                      }}
+                    />
+                  )}
+                </div>
+              )}
+
               <DossierOverlay
                 title={props.title || "Macro Intelligence Analysis"}
                 reportCode={`BEAT-${String(idx + 1).padStart(2, "0")}`}
-                theme={isDark ? "dark" : "light"}
+                theme={isDark || hasBroll ? "dark" : "light"}
               />
 
+              {/* Editorial Title for Full Bleed B-Roll */}
+              {hasBroll && backdropMode === "full_broll" && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 100,
+                    left: 80,
+                    zIndex: 20,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 12,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "inline-block",
+                      backgroundColor: accentColor,
+                      color: "#FFFFFF",
+                      fontFamily: "Space Mono, monospace",
+                      fontSize: 16,
+                      fontWeight: 700,
+                      padding: "6px 14px",
+                      borderRadius: 4,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {beat.props?.label || "CINEMATIC FORENSIC DIRECTIVE"}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "Cinzel, Georgia, serif",
+                      fontSize: 44,
+                      fontWeight: 800,
+                      color: "#F4F1EA",
+                      maxWidth: 960,
+                      lineHeight: 1.18,
+                      textShadow: "0 4px 24px rgba(0,0,0,0.85)",
+                    }}
+                  >
+                    {beat.props?.mandate || beat.spoken_dialogue || "FAÊREACH STUDIO MANDATE"}
+                  </div>
+                </div>
+              )}
+
               {/* 1. Kinetic Typography & Kinetic Counter */}
-              {(beat.visual_type === "kinetic_counter" || beat.visual_type === "kinetic_typography") && (
+              {(beat.visual_type === "kinetic_counter" || beat.visual_type === "kinetic_typography") && backdropMode !== "full_broll" && (
                 <KineticCounter
                   value={beat.props?.to || 4.2}
                   startValue={beat.props?.from || 0.0}
@@ -595,17 +700,17 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
                   durationInFrames={Math.min(durFrames - 10, 54)}
                   startFrame={triggerFrame}
                   fontSize={120}
-                  color={beat.props?.inkColor || inkColor}
+                  color={hasBroll ? "#FFFFFF" : (beat.props?.inkColor || inkColor)}
                   accentColor={beat.props?.accentColor || accentColor}
                   badge={beat.props?.label || "VERIFIED FORENSIC DATA"}
                   subtitle={beat.spoken_dialogue}
-                  backgroundColor={beat.props?.paperColor || paperColor}
+                  backgroundColor={hasBroll ? "transparent" : (beat.props?.paperColor || paperColor)}
                 />
               )}
 
               {/* 2. Enterprise Adoption Waffle Matrix */}
-              {beat.visual_type === "waffle_matrix" && (
-                <div style={{ transform: "translateY(-28px)" }}>
+              {beat.visual_type === "waffle_matrix" && backdropMode !== "full_broll" && (
+                <div style={{ transform: "translateY(-28px)", zIndex: 10 }}>
                   <WaffleMatrix
                     totalDots={beat.props?.totalDots || 500}
                     columns={25}
@@ -615,9 +720,9 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
                     title={beat.props?.label || "Enterprise Adoption Distribution"}
                     subtitle={beat.spoken_dialogue || "Empirical Corporate Modernization Saturation"}
                     badge="SYSTEMIC MIGRATION CENSUS"
-                    activeColor={beat.props?.inkColor || inkColor}
+                    activeColor={hasBroll ? "#FFFFFF" : (beat.props?.inkColor || inkColor)}
                     accentColor={beat.props?.accentColor || accentColor}
-                    backgroundColor={beat.props?.paperColor || paperColor}
+                    backgroundColor={hasBroll ? "transparent" : (beat.props?.paperColor || paperColor)}
                     durationInFrames={Math.min(durFrames - 10, 65)}
                     startFrame={triggerFrame}
                   />
@@ -625,8 +730,8 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
               )}
 
               {/* 3. Divergence Ratio & Chart Animation */}
-              {(beat.visual_type === "divergence_ratio" || beat.visual_type === "chart_animation") && (
-                <div style={{ transform: "translateY(-28px)" }}>
+              {(beat.visual_type === "divergence_ratio" || beat.visual_type === "chart_animation") && backdropMode !== "full_broll" && (
+                <div style={{ transform: "translateY(-28px)", zIndex: 10 }}>
                   <DivergenceRatio
                     title="The Operational Scissor Divergence"
                     subtitle={beat.spoken_dialogue || "Legacy Headcount Multiple vs Autonomous Software Leverage"}
@@ -635,7 +740,7 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
                     currentYear={beat.props?.upperLabel || "EXECUTION ENGINE"}
                     currentMultiplier={beat.props?.upperValue || 5.8}
                     highlighterNotice="4.5X OPERATIONAL SCISSOR GAP"
-                    backgroundColor={beat.props?.paperColor || "#EFECE6"}
+                    backgroundColor={hasBroll ? "transparent" : (beat.props?.paperColor || "#EFECE6")}
                     durationInFrames={Math.min(durFrames - 10, 55)}
                     startFrame={triggerFrame}
                   />
@@ -643,8 +748,8 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
               )}
 
               {/* 4. Proportion Gauge */}
-              {beat.visual_type === "proportion_gauge" && (
-                <AbsoluteFill style={{ backgroundColor: "#131B2A", justifyContent: "center", alignItems: "center" }}>
+              {beat.visual_type === "proportion_gauge" && backdropMode !== "full_broll" && (
+                <AbsoluteFill style={{ backgroundColor: hasBroll ? "transparent" : "#131B2A", justifyContent: "center", alignItems: "center", zIndex: 10 }}>
                   <div style={{ width: 880, height: 560 }}>
                     <ProportionGauge
                       percentage={beat.props?.percentage || 78}
