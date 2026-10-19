@@ -9,6 +9,7 @@ export interface DivergenceRatioProps {
   currentYear?: string;
   currentMultiplier?: number;
   highlighterNotice?: string;
+  unitLabel?: string;
   backgroundColor?: string;
   textColor?: string;
   accentColor?: string;
@@ -25,6 +26,7 @@ export const DivergenceRatio: React.FC<DivergenceRatioProps> = ({
   currentYear = "2025",
   currentMultiplier = 6.5,
   highlighterNotice = "MATHEMATICALLY DETACHED FROM WAGES",
+  unitLabel = "of Median Annual Income",
   backgroundColor = "#EFECE6",
   textColor = "#222222",
   accentColor = "#C62828",
@@ -150,7 +152,7 @@ export const DivergenceRatio: React.FC<DivergenceRatioProps> = ({
               {baselineMultiplier}x
             </div>
             <div style={{ fontSize: 14, color: "#666", marginTop: 4 }}>
-              of Median Annual Income
+              {unitLabel}
             </div>
           </div>
 
@@ -217,7 +219,7 @@ export const DivergenceRatio: React.FC<DivergenceRatioProps> = ({
               {rollingMultiple}x
             </div>
             <div style={{ fontSize: 14, color: "#666", marginTop: 4 }}>
-              of Median Annual Income
+              {unitLabel}
             </div>
           </div>
         </div>

@@ -5,6 +5,8 @@ export interface ProportionGaugeProps {
   percentage: number;
   label?: string;
   baselineLabel?: string;
+  primaryNote?: string;
+  baselineNote?: string;
   title?: string;
   subtitle?: string;
   accentColor?: string;
@@ -21,6 +23,8 @@ export const ProportionGauge: React.FC<ProportionGaugeProps> = ({
   percentage = 70,
   label = "Residential Real Estate",
   baselineLabel = "Stocks, Pensions & Cash (30%)",
+  primaryNote = "Primary household balance sheet driver",
+  baselineNote = "Liquid assets & capital markets",
   title = "Household Wealth Allocation",
   subtitle = "Extreme asset overexposure vs 30% international norm",
   accentColor = "#F59E0B",
@@ -183,7 +187,7 @@ export const ProportionGauge: React.FC<ProportionGaugeProps> = ({
                   {label} ({currentPercent}%)
                 </div>
                 <div style={{ fontSize: 14, color: "#94A3B8", fontFamily }}>
-                  Primary household balance sheet driver
+                  {primaryNote}
                 </div>
               </div>
             </div>
@@ -210,7 +214,7 @@ export const ProportionGauge: React.FC<ProportionGaugeProps> = ({
                   {baselineLabel}
                 </div>
                 <div style={{ fontSize: 13, color: "#64748B", fontFamily }}>
-                  Liquid assets & capital markets
+                  {baselineNote}
                 </div>
               </div>
             </div>

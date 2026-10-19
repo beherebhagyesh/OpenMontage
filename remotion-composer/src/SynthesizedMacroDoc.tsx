@@ -1153,8 +1153,8 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
               {/* 1. Kinetic Typography & Kinetic Counter */}
               {(beat.visual_type === "kinetic_counter" || beat.visual_type === "kinetic_typography") && backdropMode !== "full_broll" && (
                 <KineticCounter
-                  value={beat.props?.to || 4.2}
-                  startValue={beat.props?.from || 0.0}
+                  value={beat.props?.to ?? 0}
+                  startValue={beat.props?.from ?? 0}
                   prefix={beat.props?.prefix || "$"}
                   suffix={beat.props?.suffix || " Trillion"}
                   decimals={beat.props?.decimals ?? 1}
@@ -1173,13 +1173,13 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
               {beat.visual_type === "waffle_matrix" && backdropMode !== "full_broll" && (
                 <div style={{ transform: "translateY(-28px)", zIndex: 10 }}>
                   <WaffleMatrix
-                    totalDots={beat.props?.totalDots || 500}
+                    totalDots={beat.props?.totalDots ?? 100}
                     columns={25}
-                    activeCount={beat.props?.highlightedDots || 420}
+                    activeCount={beat.props?.highlightedDots ?? 0}
                     dotSize={15}
                     gap={7}
                     title={beat.props?.label || "Enterprise Adoption Distribution"}
-                    subtitle={beat.spoken_dialogue || "Empirical Corporate Modernization Saturation"}
+                    subtitle={beat.spoken_dialogue || ""}
                     badge="SYSTEMIC MIGRATION CENSUS"
                     activeColor={hasBroll ? "#FFFFFF" : (beat.props?.inkColor || inkColor)}
                     accentColor={beat.props?.accentColor || accentColor}
@@ -1192,20 +1192,21 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
 
               {/* 3. Divergence Ratio & Chart Animation */}
               {(beat.visual_type === "divergence_ratio" || beat.visual_type === "chart_animation") && backdropMode !== "full_broll" && (
-                <div style={{ transform: "translateY(-28px)", zIndex: 10 }}>
+                <AbsoluteFill style={{ transform: "translateY(-28px)", zIndex: 10 }}>
                   <DivergenceRatio
-                    title="The Operational Scissor Divergence"
-                    subtitle={beat.spoken_dialogue || "Legacy Headcount Multiple vs Autonomous Software Leverage"}
+                    title={beat.props?.title || ""}
+                    subtitle={beat.spoken_dialogue || ""}
                     baselineYear={beat.props?.lowerLabel || "LEGACY AGENCY"}
-                    baselineMultiplier={beat.props?.lowerValue || 1.3}
+                    baselineMultiplier={beat.props?.lowerValue ?? 0}
                     currentYear={beat.props?.upperLabel || "EXECUTION ENGINE"}
-                    currentMultiplier={beat.props?.upperValue || 5.8}
-                    highlighterNotice="4.5X OPERATIONAL SCISSOR GAP"
+                    currentMultiplier={beat.props?.upperValue ?? 0}
+                    highlighterNotice={beat.props?.highlighterNotice || ""}
+                    unitLabel={beat.props?.unitLabel || ""}
                     backgroundColor={hasBroll ? "transparent" : (beat.props?.paperColor || "#EFECE6")}
                     durationInFrames={Math.min(durFrames - 10, 55)}
                     startFrame={triggerFrame}
                   />
-                </div>
+                </AbsoluteFill>
               )}
 
               {/* 4. Proportion Gauge */}
@@ -1213,11 +1214,13 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
                 <AbsoluteFill style={{ backgroundColor: hasBroll ? "transparent" : "#131B2A", justifyContent: "center", alignItems: "center", zIndex: 10 }}>
                   <div style={{ width: 880, height: 560 }}>
                     <ProportionGauge
-                      percentage={beat.props?.percentage || 78}
-                      label={beat.props?.label || "Operating Margin Advantage"}
-                      baselineLabel="Legacy Baseline: 22%"
-                      title="Autonomous Leverage Model"
-                      subtitle={beat.spoken_dialogue || "Gross margin surplus unlocked through autonomous software"}
+                      percentage={beat.props?.percentage ?? 0}
+                      label={beat.props?.label || ""}
+                      baselineLabel={beat.props?.baselineLabel || ""}
+                      primaryNote={beat.props?.primaryNote || ""}
+                      baselineNote={beat.props?.baselineNote || ""}
+                      title={beat.props?.title || ""}
+                      subtitle={beat.spoken_dialogue || ""}
                       accentColor={beat.props?.accentColor || "#F59E0B"}
                       secondaryColor="#334155"
                       backgroundColor="rgba(30, 41, 59, 0.7)"
@@ -1233,7 +1236,7 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
               {beat.visual_type === "bento_stat_grid" && (
                 <BentoGrid
                   cards={beat.props?.cards}
-                  label={beat.props?.label || "INSTITUTIONAL METRIC TELEMETRY"}
+                  label={beat.props?.label || ""}
                   accentColor={beat.props?.accentColor || accentColor}
                 />
               )}
