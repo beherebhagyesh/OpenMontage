@@ -71,7 +71,17 @@ const DossierOverlay: React.FC<{
   title: string;
   reportCode: string;
   theme?: "light" | "dark";
-}> = ({ title, reportCode, theme = "light" }) => {
+  meta?: string;
+  stamp?: string;
+  footer?: string;
+}> = ({
+  title,
+  reportCode,
+  theme = "light",
+  meta = "LAT 30°16'N LON 97°44'W",
+  stamp = "CLASSIFIED",
+  footer = "VERIFIED QUANTITATIVE SYNTHESIS // Q4 2026",
+}) => {
   const { width, height } = useVideoConfig();
   const isVertical = width < height;
   const isDark = theme === "dark";
@@ -125,10 +135,12 @@ const DossierOverlay: React.FC<{
           <span>// {reportCode}</span>
         </div>
         <div style={{ display: "flex", gap: isVertical ? 10 : 24 }}>
-          {!isVertical && <span>LAT 30°16'N LON 97°44'W</span>}
-          <span style={{ color: accentColor, fontWeight: 700 }}>
-            CLASSIFIED
-          </span>
+          {!isVertical && meta && <span>{meta}</span>}
+          {stamp && (
+            <span style={{ color: accentColor, fontWeight: 700 }}>
+              {stamp}
+            </span>
+          )}
         </div>
       </div>
 
@@ -197,7 +209,7 @@ const DossierOverlay: React.FC<{
         }}
       >
         <span>SUBJECT: {title}</span>
-        <span>VERIFIED QUANTITATIVE SYNTHESIS // Q4 2026</span>
+        <span>{footer}</span>
       </div>
     </div>
   );
@@ -424,7 +436,12 @@ const DualCompoundingCurves: React.FC = () => {
 };
 
 // Scene 5: FarEverReach Studio Thesis Lock Climax
-const StudioThesisLock: React.FC = () => {
+const StudioThesisLock: React.FC<{ label?: string; title?: string; mandate?: string; tagline?: string }> = ({
+  label = "STRATEGIC CONCLUSION // MANDATE 2026",
+  title = "You don’t compete by working more hours.",
+  mandate = "You compete by owning the execution engine.",
+  tagline,
+}) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -462,7 +479,7 @@ const StudioThesisLock: React.FC = () => {
         }}
       >
         {/* Institutional Stamp */}
-        <div
+        {label && <div
           style={{
             display: "inline-block",
             padding: "8px 24px",
@@ -478,8 +495,8 @@ const StudioThesisLock: React.FC = () => {
             marginBottom: 32,
           }}
         >
-          STRATEGIC CONCLUSION // MANDATE 2026
-        </div>
+          {label}
+        </div>}
 
         <h1
           style={{
@@ -492,7 +509,7 @@ const StudioThesisLock: React.FC = () => {
             letterSpacing: "-0.02em",
           }}
         >
-          You don’t compete by working more hours.
+          {title}
         </h1>
 
         <p
@@ -505,7 +522,7 @@ const StudioThesisLock: React.FC = () => {
             lineHeight: 1.25,
           }}
         >
-          You compete by owning the execution engine.
+          {mandate}
         </p>
 
         {/* Decorative Divider */}
@@ -531,11 +548,15 @@ const StudioThesisLock: React.FC = () => {
             color: "rgba(27, 27, 27, 0.7)",
           }}
         >
-          <span>FAREVERREACH STUDIO</span>
-          <span>•</span>
-          <span>AUTONOMOUS MEDIA INTELLIGENCE</span>
-          <span>•</span>
-          <span>PRODUCTION BLUEPRINT 2026</span>
+          {tagline !== undefined ? <span>{tagline}</span> : (
+            <>
+              <span>FAREVERREACH STUDIO</span>
+              <span>•</span>
+              <span>AUTONOMOUS MEDIA INTELLIGENCE</span>
+              <span>•</span>
+              <span>PRODUCTION BLUEPRINT 2026</span>
+            </>
+          )}
         </div>
       </div>
     </AbsoluteFill>
@@ -568,6 +589,8 @@ export interface SynthesizedMacroDocProps {
   reportCode?: string;
   // [left, top, right, bottom] px kept clear of platform UI (e.g. 9:16 Shorts: 48, 288, 192, 672)
   safeArea?: number[];
+  // Header/footer text; empty by default so no decoration claims anything (e.g. "VERIFIED")
+  hud?: { meta?: string; stamp?: string; footer?: string };
 }
 
 // ---------------------------------------------------------------------------
@@ -1103,6 +1126,9 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
                 title={props.title || "Macro Intelligence Analysis"}
                 reportCode={`BEAT-${String(idx + 1).padStart(2, "0")}`}
                 theme={isDark || hasBroll ? "dark" : "light"}
+                meta={props.hud?.meta || ""}
+                stamp={props.hud?.stamp || ""}
+                footer={props.hud?.footer || ""}
               />
 
               {/* Editorial Title for Full Bleed B-Roll */}
@@ -1150,14 +1176,22 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
                 </div>
               )}
 
+              {/* Content band: between the top safe inset and the captions, so captions never cover a chart */}
+              <AbsoluteFill
+                style={
+                  props.safeArea
+                    ? { top: props.safeArea[1], bottom: props.safeArea[3] + 24 + 150, height: "auto" }
+                    : {}
+                }
+              >
               {/* 1. Kinetic Typography & Kinetic Counter */}
               {(beat.visual_type === "kinetic_counter" || beat.visual_type === "kinetic_typography") && backdropMode !== "full_broll" && (
                 <KineticCounter
                   value={beat.props?.to ?? 0}
                   startValue={beat.props?.from ?? 0}
-                  prefix={beat.props?.prefix || "$"}
-                  suffix={beat.props?.suffix || " Trillion"}
-                  decimals={beat.props?.decimals ?? 1}
+                  prefix={beat.props?.prefix ?? ""}
+                  suffix={beat.props?.suffix ?? ""}
+                  decimals={beat.props?.decimals ?? (Number.isInteger(beat.props?.to) ? 0 : 1)}
                   durationInFrames={Math.min(durFrames - 10, 54)}
                   startFrame={triggerFrame}
                   fontSize={120}
@@ -1304,8 +1338,14 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
                 "bento_stat_grid", "timeline_milestones", "ranking_leaderboard",
                 "code_or_terminal_log", "document_evidence_highlight", "evidence_callout"
               ].includes(beat.visual_type))) && (
-                <StudioThesisLock />
+                <StudioThesisLock
+                  label={beat.props?.label || ""}
+                  title={beat.props?.title || ""}
+                  mandate={beat.props?.mandate || ""}
+                  tagline={beat.props?.tagline || ""}
+                />
               )}
+              </AbsoluteFill>
 
               {/* Dynamic Spoken Dialogue Captions */}
               {beat.spoken_dialogue && (
