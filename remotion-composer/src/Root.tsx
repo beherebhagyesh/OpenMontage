@@ -398,16 +398,26 @@ export const Root: React.FC = () => {
         width={1920}
         height={1080}
         calculateMetadata={({ props }: { props: any }) => {
+          let durationInFrames = 1500;
           if (props?.durationInFrames) {
-            return { durationInFrames: Math.max(30, props.durationInFrames) };
-          }
-          if (props?.beats && Array.isArray(props.beats) && props.beats.length > 0) {
+            durationInFrames = Math.max(30, props.durationInFrames);
+          } else if (props?.beats && Array.isArray(props.beats) && props.beats.length > 0) {
             const maxEndSec = props.beats.reduce((acc: number, b: any) => Math.max(acc, b.end_sec || 0), 0);
             if (maxEndSec > 0) {
-              return { durationInFrames: Math.max(30, Math.ceil(maxEndSec * 30)) };
+              durationInFrames = Math.max(30, Math.ceil(maxEndSec * 30));
             }
           }
-          return { durationInFrames: 1500 };
+
+          const isVertical =
+            props?.aspectRatio === "9:16" ||
+            props?.aspect_ratio === "9:16" ||
+            props?.tasteProfile?.visual_grammar?.aspect_ratio === "9:16";
+
+          return {
+            durationInFrames,
+            width: isVertical ? 1080 : 1920,
+            height: isVertical ? 1920 : 1080,
+          };
         }}
       />
     </>

@@ -72,6 +72,8 @@ const DossierOverlay: React.FC<{
   reportCode: string;
   theme?: "light" | "dark";
 }> = ({ title, reportCode, theme = "light" }) => {
+  const { width, height } = useVideoConfig();
+  const isVertical = width < height;
   const isDark = theme === "dark";
   const fgColor = isDark ? "rgba(226, 232, 240, 0.75)" : "rgba(27, 27, 27, 0.75)";
   const borderColor = isDark ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.12)";
@@ -81,10 +83,10 @@ const DossierOverlay: React.FC<{
     <div
       style={{
         position: "absolute",
-        top: 28,
-        left: 48,
-        right: 48,
-        bottom: 24,
+        top: isVertical ? 48 : 28,
+        left: isVertical ? 32 : 48,
+        right: isVertical ? 32 : 48,
+        bottom: isVertical ? 48 : 24,
         pointerEvents: "none",
         zIndex: 50,
         display: "flex",
@@ -99,33 +101,33 @@ const DossierOverlay: React.FC<{
           justifyContent: "space-between",
           alignItems: "center",
           borderBottom: `1px solid ${borderColor}`,
-          paddingBottom: 12,
+          paddingBottom: 10,
           fontFamily: "Courier, monospace",
-          fontSize: 13,
-          letterSpacing: "0.15em",
+          fontSize: isVertical ? 11 : 13,
+          letterSpacing: "0.12em",
           color: fgColor,
           textTransform: "uppercase",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span
             style={{
               display: "inline-block",
-              width: 8,
-              height: 8,
+              width: 7,
+              height: 7,
               backgroundColor: accentColor,
               borderRadius: "50%",
             }}
           />
           <span style={{ fontWeight: 700, color: accentColor }}>
-            FAR-EVER-REACH MACRO REPORT
+            FAR-EVER-REACH
           </span>
           <span>// {reportCode}</span>
         </div>
-        <div style={{ display: "flex", gap: 24 }}>
-          <span>LAT 30°16'N LON 97°44'W</span>
+        <div style={{ display: "flex", gap: isVertical ? 10 : 24 }}>
+          {!isVertical && <span>LAT 30°16'N LON 97°44'W</span>}
           <span style={{ color: accentColor, fontWeight: 700 }}>
-            CLASSIFIED: UNRESTRICTED
+            CLASSIFIED
           </span>
         </div>
       </div>
@@ -566,8 +568,465 @@ export interface SynthesizedMacroDocProps {
   reportCode?: string;
 }
 
+// ---------------------------------------------------------------------------
+// Phase 4 New Visual Archetype Components
+// ---------------------------------------------------------------------------
+
+const BentoGrid: React.FC<{
+  cards?: Array<{ label: string; value: string; badge?: string }>;
+  label?: string;
+  accentColor?: string;
+}> = ({ cards = [], label, accentColor = "#D9622B" }) => {
+  const { width, height } = useVideoConfig();
+  const isVertical = width < height;
+  const frame = useCurrentFrame();
+
+  const defaultCards = cards.length > 0 ? cards : [
+    { label: "CAPEX SHIFT", value: "$4.2T", badge: "+320%" },
+    { label: "MARGIN SPREAD", value: "78%", badge: "LEVERAGED" },
+    { label: "EXECUTION MULTIPLE", value: "5.8x", badge: "VALUATION" },
+    { label: "ACTIVE COHORTS", value: "420", badge: "F500" },
+  ];
+
+  return (
+    <AbsoluteFill
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: isVertical ? "120px 40px" : "80px 140px",
+        zIndex: 10,
+      }}
+    >
+      {label && (
+        <div
+          style={{
+            fontFamily: "Space Mono, monospace",
+            fontSize: isVertical ? 14 : 18,
+            letterSpacing: "0.15em",
+            color: accentColor,
+            marginBottom: 24,
+            textTransform: "uppercase",
+            fontWeight: 700,
+          }}
+        >
+          {label}
+        </div>
+      )}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: isVertical ? "1fr" : "repeat(2, 1fr)",
+          gap: isVertical ? 16 : 24,
+          width: "100%",
+          maxWidth: isVertical ? 800 : 1200,
+        }}
+      >
+        {defaultCards.slice(0, 4).map((c, i) => {
+          const cardProgress = spring({
+            frame: frame - i * 6,
+            fps: 30,
+            config: { damping: 14, stiffness: 100 },
+          });
+          return (
+            <div
+              key={i}
+              style={{
+                backgroundColor: "rgba(19, 27, 42, 0.85)",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                borderRadius: 12,
+                padding: isVertical ? "20px 24px" : "28px 36px",
+                backdropFilter: "blur(12px)",
+                opacity: cardProgress,
+                transform: `translateY(${(1 - cardProgress) * 20}px)`,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <span style={{ fontFamily: "Space Grotesk, sans-serif", fontSize: isVertical ? 14 : 16, color: "rgba(255,255,255,0.7)", letterSpacing: "0.08em" }}>
+                  {c.label}
+                </span>
+                {c.badge && (
+                  <span style={{ backgroundColor: accentColor, color: "#FFFFFF", fontFamily: "Space Mono, monospace", fontSize: 12, padding: "2px 8px", borderRadius: 4, fontWeight: 700 }}>
+                    {c.badge}
+                  </span>
+                )}
+              </div>
+              <div style={{ fontFamily: "Cinzel, Georgia, serif", fontSize: isVertical ? 38 : 54, fontWeight: 800, color: "#FFFFFF" }}>
+                {c.value}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+const TimelineMilestones: React.FC<{
+  milestones?: Array<{ step: string; title: string; desc: string }>;
+  label?: string;
+  accentColor?: string;
+}> = ({ milestones = [], label, accentColor = "#D9622B" }) => {
+  const { width, height } = useVideoConfig();
+  const isVertical = width < height;
+  const frame = useCurrentFrame();
+
+  const defaultItems = milestones.length > 0 ? milestones : [
+    { step: "2020", title: "Manual Cloud", desc: "1.3x Revenue Multiple" },
+    { step: "2023", title: "Hybrid API", desc: "Workflow Orchestration" },
+    { step: "2026", title: "Autonomous Core", desc: "5.8x Capital Surplus" },
+  ];
+
+  return (
+    <AbsoluteFill
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: isVertical ? "120px 40px" : "80px 120px",
+        zIndex: 10,
+      }}
+    >
+      {label && (
+        <div style={{ fontFamily: "Space Mono, monospace", fontSize: isVertical ? 14 : 18, color: accentColor, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginBottom: 32 }}>
+          {label}
+        </div>
+      )}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: isVertical ? "column" : "row",
+          gap: isVertical ? 20 : 32,
+          width: "100%",
+          maxWidth: isVertical ? 720 : 1360,
+          justifyContent: "center",
+        }}
+      >
+        {defaultItems.map((m, i) => {
+          const itemProgress = spring({
+            frame: frame - i * 8,
+            fps: 30,
+            config: { damping: 14, stiffness: 100 },
+          });
+          return (
+            <div
+              key={i}
+              style={{
+                flex: 1,
+                backgroundColor: "rgba(19, 27, 42, 0.88)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: 12,
+                padding: isVertical ? "20px 24px" : "32px 28px",
+                backdropFilter: "blur(14px)",
+                opacity: itemProgress,
+                transform: isVertical ? `translateX(${(1 - itemProgress) * -20}px)` : `translateY(${(1 - itemProgress) * 20}px)`,
+                boxShadow: "0 12px 36px rgba(0,0,0,0.45)",
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+              }}
+            >
+              <div style={{ display: "inline-block", alignSelf: "flex-start", backgroundColor: accentColor, color: "#FFFFFF", fontFamily: "Space Mono, monospace", fontSize: 13, fontWeight: 700, padding: "3px 10px", borderRadius: 4 }}>
+                {m.step}
+              </div>
+              <div style={{ fontFamily: "Cinzel, Georgia, serif", fontSize: isVertical ? 22 : 28, fontWeight: 700, color: "#FFFFFF" }}>
+                {m.title}
+              </div>
+              <div style={{ fontFamily: "Space Grotesk, sans-serif", fontSize: isVertical ? 15 : 17, color: "rgba(255,255,255,0.72)", lineHeight: 1.4 }}>
+                {m.desc}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+const RankingLeaderboard: React.FC<{
+  items?: Array<{ rank: string; name: string; metric: string; change: string }>;
+  label?: string;
+  accentColor?: string;
+}> = ({ items = [], label, accentColor = "#D9622B" }) => {
+  const { width, height } = useVideoConfig();
+  const isVertical = width < height;
+  const frame = useCurrentFrame();
+
+  const defaultItems = items.length > 0 ? items : [
+    { rank: "01", name: "AUTONOMOUS ENGINES", metric: "5.8x", change: "+346%" },
+    { rank: "02", name: "HYBRID PLATFORMS", metric: "3.1x", change: "+138%" },
+    { rank: "03", name: "LEGACY AGENCIES", metric: "1.3x", change: "-12%" },
+  ];
+
+  return (
+    <AbsoluteFill
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: isVertical ? "120px 40px" : "80px 140px",
+        zIndex: 10,
+      }}
+    >
+      {label && (
+        <div style={{ fontFamily: "Space Mono, monospace", fontSize: isVertical ? 14 : 18, color: accentColor, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginBottom: 28 }}>
+          {label}
+        </div>
+      )}
+      <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", maxWidth: isVertical ? 760 : 1100 }}>
+        {defaultItems.map((item, i) => {
+          const itemProgress = spring({
+            frame: frame - i * 6,
+            fps: 30,
+            config: { damping: 14, stiffness: 110 },
+          });
+          const isNegative = item.change.startsWith("-");
+          return (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                backgroundColor: i === 0 ? "rgba(35, 48, 74, 0.92)" : "rgba(19, 27, 42, 0.85)",
+                border: i === 0 ? `2px solid ${accentColor}` : "1px solid rgba(255, 255, 255, 0.12)",
+                borderRadius: 10,
+                padding: isVertical ? "16px 20px" : "20px 32px",
+                opacity: itemProgress,
+                transform: `translateX(${(1 - itemProgress) * -25}px)`,
+                backdropFilter: "blur(12px)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: isVertical ? 12 : 20 }}>
+                <span style={{ fontFamily: "Space Mono, monospace", fontSize: isVertical ? 18 : 22, fontWeight: 800, color: accentColor }}>
+                  #{item.rank}
+                </span>
+                <span style={{ fontFamily: "Cinzel, Georgia, serif", fontSize: isVertical ? 18 : 24, fontWeight: 700, color: "#FFFFFF" }}>
+                  {item.name}
+                </span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <span style={{ fontFamily: "Space Mono, monospace", fontSize: isVertical ? 22 : 30, fontWeight: 800, color: "#FFFFFF" }}>
+                  {item.metric}
+                </span>
+                <span
+                  style={{
+                    fontFamily: "Space Mono, monospace",
+                    fontSize: isVertical ? 12 : 14,
+                    fontWeight: 700,
+                    padding: "3px 8px",
+                    borderRadius: 4,
+                    backgroundColor: isNegative ? "rgba(239, 68, 68, 0.2)" : "rgba(34, 197, 94, 0.2)",
+                    color: isNegative ? "#EF4444" : "#22C55E",
+                  }}
+                >
+                  {item.change}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+const TerminalAuditLog: React.FC<{
+  systemName?: string;
+  status?: string;
+  logs?: Array<{ time: string; level: string; text: string }>;
+  label?: string;
+  accentColor?: string;
+}> = ({ systemName = "AUTONOMOUS CORE v4.0", status = "VERIFIED & LOCKED", logs = [], label, accentColor = "#D9622B" }) => {
+  const { width, height } = useVideoConfig();
+  const isVertical = width < height;
+  const frame = useCurrentFrame();
+
+  const defaultLogs = logs.length > 0 ? logs : [
+    { time: "00:00:01", level: "INIT", text: "Loading empirical research dossier..." },
+    { time: "00:00:02", level: "EXEC", text: "Synthesizing deterministic media graph..." },
+    { time: "00:00:03", level: "AUDIT", text: "Operating margin locked at 78%." },
+  ];
+
+  return (
+    <AbsoluteFill
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: isVertical ? "120px 32px" : "80px 140px",
+        zIndex: 10,
+      }}
+    >
+      {label && (
+        <div style={{ fontFamily: "Space Mono, monospace", fontSize: isVertical ? 14 : 18, color: accentColor, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginBottom: 24 }}>
+          {label}
+        </div>
+      )}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: isVertical ? 800 : 1100,
+          backgroundColor: "#0A0D14",
+          border: "1px solid rgba(255, 255, 255, 0.16)",
+          borderRadius: 12,
+          overflow: "hidden",
+          boxShadow: "0 16px 48px rgba(0,0,0,0.6)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 18px", backgroundColor: "#131824", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <span style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: "#EF4444" }} />
+            <span style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: "#F59E0B" }} />
+            <span style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: "#10B981" }} />
+          </div>
+          <span style={{ fontFamily: "Space Mono, monospace", fontSize: 13, color: "rgba(255,255,255,0.7)", letterSpacing: "0.08em" }}>
+            {systemName}
+          </span>
+          <span style={{ fontFamily: "Space Mono, monospace", fontSize: 11, backgroundColor: "rgba(16, 185, 129, 0.2)", color: "#10B981", padding: "2px 8px", borderRadius: 4, fontWeight: 700 }}>
+            {status}
+          </span>
+        </div>
+        <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 14 }}>
+          {defaultLogs.map((log, i) => {
+            const lineOpacity = frame >= i * 15 ? 1 : 0;
+            return (
+              <div key={i} style={{ opacity: lineOpacity, fontFamily: "Space Mono, monospace", fontSize: isVertical ? 13 : 16, lineHeight: 1.5, display: "flex", gap: 12, color: "#E2E8F0" }}>
+                <span style={{ color: "rgba(255,255,255,0.4)" }}>[{log.time}]</span>
+                <span style={{ color: log.level === "AUDIT" ? "#10B981" : accentColor, fontWeight: 700 }}>[{log.level}]</span>
+                <span>{log.text}</span>
+              </div>
+            );
+          })}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+            <span style={{ color: accentColor, fontFamily: "Space Mono, monospace", fontSize: 16 }}>&gt;</span>
+            <span style={{ width: 8, height: 18, backgroundColor: accentColor, opacity: (Math.floor(frame / 15) % 2 === 0) ? 1 : 0 }} />
+          </div>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+const DocumentEvidenceHighlight: React.FC<{
+  documentTitle?: string;
+  documentRef?: string;
+  sourceSnippet?: string;
+  highlightPhrase?: string;
+  calloutTag?: string;
+  label?: string;
+  accentColor?: string;
+}> = ({
+  documentTitle = "SEC FORM 10-K // REGULATORY DISCLOSURE",
+  documentRef = "DOC-2026-F500-REV",
+  sourceSnippet = "The shift toward autonomous software operations has fundamentally decoupled marginal revenue from human payroll expenditures.",
+  highlightPhrase = "decoupled marginal revenue from human payroll expenditures",
+  calloutTag = "MATERIAL DISCLOSURE",
+  label,
+  accentColor = "#D9622B",
+}) => {
+  const { width, height } = useVideoConfig();
+  const isVertical = width < height;
+  const frame = useCurrentFrame();
+
+  const sweepProgress = interpolate(frame, [15, 45], [0, 100], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <AbsoluteFill
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: isVertical ? "120px 32px" : "80px 140px",
+        zIndex: 10,
+      }}
+    >
+      {label && (
+        <div style={{ fontFamily: "Space Mono, monospace", fontSize: isVertical ? 14 : 18, color: accentColor, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginBottom: 24 }}>
+          {label}
+        </div>
+      )}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: isVertical ? 820 : 1120,
+          backgroundColor: "#FAF8F5",
+          border: "1px solid rgba(0, 0, 0, 0.14)",
+          borderRadius: 12,
+          padding: isVertical ? "28px 24px" : "36px 44px",
+          boxShadow: "0 20px 50px rgba(0,0,0,0.45)",
+          color: "#1A1A1A",
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(0,0,0,0.12)", paddingBottom: 12 }}>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: accentColor }} />
+            <span style={{ fontFamily: "Space Mono, monospace", fontSize: isVertical ? 12 : 14, fontWeight: 700, letterSpacing: "0.1em", color: "#333333" }}>
+              {documentTitle}
+            </span>
+          </div>
+          <span style={{ fontFamily: "Space Mono, monospace", fontSize: 11, backgroundColor: "rgba(0,0,0,0.06)", padding: "2px 8px", borderRadius: 4, color: "#666666" }}>
+            REF: {documentRef}
+          </span>
+        </div>
+        <div style={{ fontFamily: "Cinzel, Georgia, serif", fontSize: isVertical ? 20 : 26, lineHeight: 1.5, color: "#111111" }}>
+          {sourceSnippet.includes(highlightPhrase) ? (
+            <>
+              {sourceSnippet.split(highlightPhrase)[0]}
+              <span
+                style={{
+                  background: `linear-gradient(90deg, rgba(254, 240, 138, 0.95) ${sweepProgress}%, transparent ${sweepProgress}%)`,
+                  padding: "2px 4px",
+                  borderRadius: 2,
+                  fontWeight: 700,
+                  color: "#0F172A",
+                }}
+              >
+                {highlightPhrase}
+              </span>
+              {sourceSnippet.split(highlightPhrase)[1]}
+            </>
+          ) : (
+            <span
+              style={{
+                background: `linear-gradient(90deg, rgba(254, 240, 138, 0.95) ${sweepProgress}%, transparent ${sweepProgress}%)`,
+                padding: "2px 4px",
+              }}
+            >
+              {sourceSnippet}
+            </span>
+          )}
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
+          <span style={{ backgroundColor: accentColor, color: "#FFFFFF", fontFamily: "Space Mono, monospace", fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 4, letterSpacing: "0.08em" }}>
+            {calloutTag}
+          </span>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 // MASTER COMPOSITION: SynthesizedMacroDoc
 export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) => {
+  const { width, height } = useVideoConfig();
+  const isVertical = width < height;
+
   // If dynamic beats are passed via --props, render them dynamically
   if (props.beats && props.beats.length > 0) {
     const paperColor = props.tasteProfile?.visual_grammar?.paper_color || "#F4F1EA";
@@ -770,16 +1229,56 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
 
               {/* 5. Bento Stat Grid */}
               {beat.visual_type === "bento_stat_grid" && (
-                <StatCard
-                  stat={beat.props?.stat || "$4.2T"}
-                  subtitle={beat.spoken_dialogue || beat.props?.label || "Institutional Capital Reallocation"}
-                  color={beat.props?.inkColor || inkColor}
+                <BentoGrid
+                  cards={beat.props?.cards}
+                  label={beat.props?.label || "INSTITUTIONAL METRIC TELEMETRY"}
                   accentColor={beat.props?.accentColor || accentColor}
-                  backgroundColor={beat.props?.paperColor || paperColor}
                 />
               )}
 
-              {/* 6. Evidence Callout */}
+              {/* 6. Timeline Milestones */}
+              {beat.visual_type === "timeline_milestones" && (
+                <TimelineMilestones
+                  milestones={beat.props?.milestones}
+                  label={beat.props?.label || "CHRONOLOGICAL CAPITAL CONVERGENCE"}
+                  accentColor={beat.props?.accentColor || accentColor}
+                />
+              )}
+
+              {/* 7. Ranking Leaderboard */}
+              {beat.visual_type === "ranking_leaderboard" && (
+                <RankingLeaderboard
+                  items={beat.props?.items}
+                  label={beat.props?.label || "SECTOR VALUATION LEADERBOARD"}
+                  accentColor={beat.props?.accentColor || accentColor}
+                />
+              )}
+
+              {/* 8. Code / Terminal Audit Log */}
+              {beat.visual_type === "code_or_terminal_log" && (
+                <TerminalAuditLog
+                  systemName={beat.props?.systemName}
+                  status={beat.props?.status}
+                  logs={beat.props?.logs}
+                  label={beat.props?.label || "KERNEL TELEMETRY AUDIT"}
+                  accentColor={beat.props?.accentColor || accentColor}
+                />
+              )}
+
+              {/* 9. Document Evidence Highlight */}
+              {beat.visual_type === "document_evidence_highlight" && (
+                <DocumentEvidenceHighlight
+                  documentTitle={beat.props?.documentTitle}
+                  documentRef={beat.props?.documentRef}
+                  sourceSnippet={beat.props?.sourceSnippet || beat.spoken_dialogue}
+                  highlightPhrase={beat.props?.highlightPhrase}
+                  calloutTag={beat.props?.calloutTag}
+                  label={beat.props?.label || "EMPIRICAL REGULATORY EXHIBIT"}
+                  accentColor={beat.props?.accentColor || accentColor}
+                />
+              )}
+
+              {/* 10. Evidence Callout */}
               {beat.visual_type === "evidence_callout" && (
                 <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: 80 }}>
                   <CalloutBox
@@ -793,8 +1292,13 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
                 </AbsoluteFill>
               )}
 
-              {/* 7. Fallback / Closing Slate */}
-              {(beat.visual_type === "broll_slate" || (!["kinetic_counter", "kinetic_typography", "waffle_matrix", "divergence_ratio", "chart_animation", "proportion_gauge", "bento_stat_grid", "evidence_callout"].includes(beat.visual_type))) && (
+              {/* 11. Fallback / Closing Slate */}
+              {(beat.visual_type === "broll_slate" || (![
+                "kinetic_counter", "kinetic_typography", "waffle_matrix",
+                "divergence_ratio", "chart_animation", "proportion_gauge",
+                "bento_stat_grid", "timeline_milestones", "ranking_leaderboard",
+                "code_or_terminal_log", "document_evidence_highlight", "evidence_callout"
+              ].includes(beat.visual_type))) && (
                 <StudioThesisLock />
               )}
 
@@ -805,23 +1309,23 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
                     position: "absolute",
                     left: 0,
                     right: 0,
-                    bottom: 48,
+                    bottom: isVertical ? 96 : 48,
                     zIndex: 90,
                     display: "flex",
                     justifyContent: "center",
                     pointerEvents: "none",
-                    padding: "0 80px",
+                    padding: isVertical ? "0 36px" : "0 80px",
                   }}
                 >
                   <div
                     style={{
                       backgroundColor: "rgba(18, 16, 14, 0.88)",
                       backdropFilter: "blur(12px)",
-                      padding: "12px 28px",
+                      padding: isVertical ? "12px 20px" : "12px 28px",
                       borderRadius: 8,
                       border: "1px solid rgba(197, 155, 39, 0.35)",
                       boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
-                      maxWidth: 1300,
+                      maxWidth: isVertical ? 920 : 1300,
                       textAlign: "center",
                     }}
                   >
@@ -829,7 +1333,7 @@ export const SynthesizedMacroDoc: React.FC<SynthesizedMacroDocProps> = (props) =
                       style={{
                         margin: 0,
                         fontFamily: "Space Grotesk, Inter, sans-serif",
-                        fontSize: 26,
+                        fontSize: isVertical ? 20 : 26,
                         fontWeight: 700,
                         color: "#F4F1EA",
                         letterSpacing: "-0.01em",
