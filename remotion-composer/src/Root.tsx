@@ -413,6 +413,12 @@ export const Root: React.FC = () => {
             props?.aspect_ratio === "9:16" ||
             props?.tasteProfile?.visual_grammar?.aspect_ratio === "9:16";
 
+          // Any format: explicit width/height props win (1:1, 4:5, ...); else 16:9 or 9:16
+          const w = Number(props?.width) || 0;
+          const h = Number(props?.height) || 0;
+          if (w > 0 && h > 0) {
+            return { durationInFrames, width: w, height: h };
+          }
           return {
             durationInFrames,
             width: isVertical ? 1080 : 1920,
